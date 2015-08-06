@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="info.quantumflux.sample">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+
+    <application
+        android:name="info.quantumflux.sample.SampleApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="AUTHORITY"
+            android:value="info.quantumflux.sample" />
+        <meta-data
+            android:name="DATABASE_NAME"
+            android:value="QuantumFluxSample.sqlite" />
+        <meta-data
+            android:name="DATABASE_VERSION"
+            android:value="1" />
+        <meta-data
+            android:name="PACKAGE_NAME"
+            android:value="info.quantumflux.sample" />
+        <meta-data
+            android:name="QUERY_LOG"
+            android:value="true" />
+
+        <activity
+            android:name="info.quantumflux.sample.MainActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="info.quantumflux.provider.QuantumFluxContentProvider"
+            android:authorities="info.quantumflux.sample"
+            android:exported="false" />
+
+        <service android:name=".sync.AuthenticatorService">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+        <service
+            android:name=".sync.SyncService"
+            android:exported="true"
+            android:process=":sync">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+        </service>
+    </application>
+
+</manifest>

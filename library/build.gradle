@@ -1,0 +1,100 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+version = "0.9.0"
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
+    resourcePrefix "qf_"
+
+    defaultConfig {
+        minSdkVersion 12
+        targetSdkVersion 22
+        versionCode 1
+        versionName "0.9.0"
+    }
+    buildTypes {
+    }
+}
+
+def siteUrl = 'https://github.com/himanshu-soni/QuantumFlux'
+def gitUrl = 'https://github.com/himanshu-soni/QuantumFlux.git'
+group = "info.quantumflux"
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+
+    configurations = ['archives']
+    pkg {
+        repo = "maven"
+        name = "QuantumFlux"
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = ["Apache-2.0"]
+        publish = true
+    }
+}
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                packaging 'aar'
+
+                name 'A Powerful Android Content Provider ORM'
+                url siteUrl
+
+                // Set your license
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'himanshu-soni'
+                        name 'Himanshu Soni'
+                        email 'himanshu_soni@mail.com'
+                    }
+                }
+                scm {
+                    connection gitUrl
+                    developerConnection gitUrl
+                    url siteUrl
+
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:support-v4:22.2.1'
+}
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+//    options.encoding = 'UTF-8'
+}
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
