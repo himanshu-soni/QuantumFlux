@@ -53,7 +53,7 @@ See [releases](https://github.com/himanshu-soni/QuantumFlux/releases) page to do
 
 ## Basic Usage
 
-1. Install the project via any of the method above. and extend `Application` and us it as following:
+1. Install the project via any of the method above. and extend `Application` class and use it as following:
   
    ```
    public class SampleApplication extends Application {
@@ -75,7 +75,7 @@ See [releases](https://github.com/himanshu-soni/QuantumFlux/releases) page to do
    ```
    
    
-3. following meta data in `<application>` tag
+3. add following meta data in `<application>` tag
    
    ```xml
    <meta-data android:name="AUTHORITY" android:value="info.quantumflux.sample" />
