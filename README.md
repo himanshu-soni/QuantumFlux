@@ -54,91 +54,92 @@ See [releases](https://github.com/himanshu-soni/QuantumFlux/releases) page to do
 ## Basic Usage
 
 1. Install the project via any of the method above. and extend `Application` and us it as following:
-
-```
-public class SampleApplication extends Application {
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-        QuantumFlux.initialize(this);
-    }
-}
-```
-
+  
+   ```
+   public class SampleApplication extends Application {
+       @Override
+       protected void attachBaseContext(Context base) {
+           super.attachBaseContext(base);
+           QuantumFlux.initialize(this);
+       }
+   }
+   ```
+   
 2. register this application class in Manifest file:
-
-```xml
-<application
-        android:name="info.quantumflux.sample.SampleApplication"
-        ...
-        >
-```
-
+   
+   ```xml
+   <application
+           android:name="info.quantumflux.sample.SampleApplication"
+           ...
+           >
+   ```
+   
+   
 3. following meta data in `<application>` tag
-
-
-```xml
-<meta-data android:name="AUTHORITY" android:value="info.quantumflux.sample" />
-<meta-data android:name="DATABASE_NAME" android:value="QuantumFluxSample.sqlite" />
-<meta-data android:name="DATABASE_VERSION" android:value="1" />
-<meta-data android:name="PACKAGE_NAME" android:value="info.quantumflux.sample" />
-<meta-data android:name="QUERY_LOG" android:value="true" /> <!-- Optional -->
-```
-
+   
+   ```xml
+   <meta-data android:name="AUTHORITY" android:value="info.quantumflux.sample" />
+   <meta-data android:name="DATABASE_NAME" android:value="QuantumFluxSample.sqlite" />
+   <meta-data android:name="DATABASE_VERSION" android:value="1" />
+   <meta-data android:name="PACKAGE_NAME" android:value="info.quantumflux.sample" />
+   <meta-data android:name="QUERY_LOG" android:value="true" /> <!-- Optional -->
+   ```
+   
+   
 4. register content provider:
-
-```xml
-<provider
-      android:name="info.quantumflux.provider.QuantumFluxContentProvider"
-      android:authorities="info.quantumflux.sample"
-      android:exported="false" />
-```
-
+    
+    ```xml
+    <provider
+        android:name="info.quantumflux.provider.QuantumFluxContentProvider"
+        android:authorities="info.quantumflux.sample"
+        android:exported="false" />
+    ```
+    
 5. Now, you just have to create modal classes by:
-
-i. annotation:
-
-```
-@Table
-public class Book {
-...
-}
-```
-
-ii. extending class:
-
-```
-public class Author extends QuantumFluxRecord<Author> {
-    public String name;
-    ...
-}
-```
+    * annotation:
+        
+        ```
+        @Table
+        public class Book {
+        ...
+        }
+        ```
+    
+    * extending class:
+        
+        ```
+        public class Author extends QuantumFluxRecord<Author> {
+            public String name;
+            ...
+        }
+        ```
 
 6. Access:
-```
-Book book = new Book();
-book.name = "Sorcerer's Stone";
-book.isbn = "122342564";
-QuantumFlux.insert(book);
-```
-
-```
-Author author = new Author();
-author.name = "J.K. Rollings";
-author.save();
-```
-
-```
-Author first = Select.from(Author.class).first();
-first.name = "J. K. Rowling";
-first.update();
-```
-
-```
-QuantumFlux.deleteAll(Book.class);
-Author first = Select.from(Author.class).first();
-first.delete();
-```
+    
+    ```
+    Book book = new Book();
+    book.name = "Sorcerer's Stone";
+    book.isbn = "122342564";
+    QuantumFlux.insert(book);
+    ```
+    
+    ```
+    Author author = new Author();
+    author.name = "J.K. Rollings";
+    author.save();
+    ```
+    
+    ```
+    Author first = Select.from(Author.class).first();
+    first.name = "J. K. Rowling";
+    first.update();
+    ```
+    
+    ```
+    QuantumFlux.deleteAll(Book.class);
+    Author first = Select.from(Author.class).first();
+    first.delete();
+    ```
 
 =========================
 
