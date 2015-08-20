@@ -5,6 +5,7 @@ they will be accessed normally and creates [ContentProvider](http://developer.an
 
 
 [ ![Download](https://api.bintray.com/packages/himanshu-soni/maven/QuantumFlux/images/download.svg) ](https://bintray.com/himanshu-soni/maven/QuantumFlux/_latestVersion)
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-QuantumFlux-green.svg?style=flat)](https://android-arsenal.com/details/1/2347)
 
 
 For more information in detail, please check [Wiki](https://github.com/himanshu-soni/QuantumFlux/wiki) page.
