@@ -26,7 +26,7 @@ For more information in detail, please check [Wiki](https://github.com/himanshu-
 add following line to your module's dependency list:
 
 ```
-compile 'info.quantumflux:library:0.9.0'
+compile 'info.quantumflux:library:0.9.1'
 ```
 
 
@@ -38,7 +38,7 @@ Declare the dependency in Maven:
 <dependency>
     <groupId>info.quantumflux</groupId>
     <artifactId>library</artifactId>
-    <version>0.9.0</version>
+    <version>0.9.1</version>
 </dependency>
 ```
 
