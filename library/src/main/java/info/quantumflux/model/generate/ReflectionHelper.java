@@ -5,6 +5,20 @@ import android.content.pm.PackageManager;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
+
+import dalvik.system.DexFile;
 import info.quantumflux.QuantumFlux;
 import info.quantumflux.model.QuantumFluxRecord;
 import info.quantumflux.model.annotation.Authority;
@@ -20,21 +34,6 @@ import info.quantumflux.model.map.SqlColumnMapping;
 import info.quantumflux.model.map.SqlColumnMappingFactory;
 import info.quantumflux.model.util.ManifestHelper;
 import info.quantumflux.model.util.NamingUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.List;
-
-import dalvik.system.DexFile;
 
 /**
  * This class will convert any valid Java Object marked with the {@link Table} annotation
@@ -66,6 +65,8 @@ public class ReflectionHelper {
         SqlColumnMappingFactory columnMappingFactory = QuantumFlux.getColumnMappingFactory();
 
         for (Field field : getAllObjectFields(dataModelObject)) {
+            if (!isValidField(field)) continue;
+
             boolean autoIncrement = false;
             if (field.isAnnotationPresent(PrimaryKey.class)) {
                 autoIncrement = field.getAnnotation(PrimaryKey.class).autoIncrement();
@@ -76,7 +77,7 @@ public class ReflectionHelper {
             String columnName = null;
             boolean required = false;
             boolean notifyChanges = true;
-            if (isColumnAnnotationPresent(field)) {
+            if (field.isAnnotationPresent(Column.class)) {
                 column = field.getAnnotation(Column.class);
                 columnName = column.columnName();
                 required = column.required();
@@ -139,15 +140,15 @@ public class ReflectionHelper {
                 tableDetails.addConstraint(tableConstraint);
             }
         }
+
         return tableDetails;
     }
 
-    private static boolean isColumnAnnotationPresent(Field field) {
-        boolean isAnnotated = field.isAnnotationPresent(Column.class);
+    private static boolean isValidField(Field field) {
         boolean isStatic = Modifier.isStatic(field.getModifiers());
         boolean isTransient = Modifier.isTransient(field.getModifiers());
 
-        return isAnnotated && !isStatic && !isTransient;
+        return !isStatic && !isTransient;
     }
 
 //    public static Map<Field, Column> getColumns(Class<?> dataModelObject) {
@@ -188,10 +189,6 @@ public class ReflectionHelper {
         }
 
         return annotations;
-    }
-
-    public static enum TableType {
-        TABLE, TABLE_VIEW
     }
 
     public static List<Class<?>> getDomainClasses(Context context, TableType type) {
@@ -338,5 +335,9 @@ public class ReflectionHelper {
 
     private static String getSourcePath(Context context) throws PackageManager.NameNotFoundException {
         return context.getPackageManager().getApplicationInfo(context.getPackageName(), 0).sourceDir;
+    }
+
+    public static enum TableType {
+        TABLE, TABLE_VIEW
     }
 }
