@@ -6,11 +6,11 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.RemoteException;
 
+import java.util.ArrayList;
+
 import info.quantumflux.QuantumFlux;
 import info.quantumflux.QuantumFluxSyncHelper;
 import info.quantumflux.model.generate.TableDetails;
-
-import java.util.ArrayList;
 
 public class QuantumFluxBatchDispatcher<T> extends ArrayList<T> {
 
@@ -48,13 +48,11 @@ public class QuantumFluxBatchDispatcher<T> extends ArrayList<T> {
     }
 
     private void checkSizeAndDispatch() {
-        if (size() >= mDispatchSize)
-            dispatch();
+        if (size() >= mDispatchSize) dispatch();
     }
 
     public void dispatch() {
-        if (isEmpty())
-            return;
+        if (isEmpty()) return;
 
         if (mContentProviderClient == null) {
             this.mContentProviderClient = mContext.getContentResolver().acquireContentProviderClient(mUri);
@@ -62,13 +60,10 @@ public class QuantumFluxBatchDispatcher<T> extends ArrayList<T> {
         }
 
         try {
-            if (isSync) QuantumFluxSyncHelper.insert( mContentProviderClient, toArray());
-            else {
-                ContentValues[] values = new ContentValues[size()];
-                for (int i = 0; i < size(); i++) {
-                    values[i] = ModelInflater.deflate(mTableDetails, get(i));
-                }
-
+            if (isSync) {
+                QuantumFluxSyncHelper.insert(mContentProviderClient, toArray());
+            } else {
+                ContentValues[] values = ModelInflater.deflateAll(mTableDetails, toArray());
                 mContentProviderClient.bulkInsert(mUri, values);
             }
             clear();
@@ -79,11 +74,10 @@ public class QuantumFluxBatchDispatcher<T> extends ArrayList<T> {
     }
 
     public void release(boolean dispatchRemaining) {
-        if (dispatchRemaining)
-            dispatch();
+        if (dispatchRemaining) dispatch();
 
         clear();
-        if (mReleaseProvider)
-            mContentProviderClient.release();
+
+        if (mReleaseProvider) mContentProviderClient.release();
     }
 }

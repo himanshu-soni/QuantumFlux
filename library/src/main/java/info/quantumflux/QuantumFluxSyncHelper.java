@@ -12,9 +12,10 @@ import info.quantumflux.provider.QuantumFluxContentProvider;
 import info.quantumflux.provider.util.UriMatcherHelper;
 
 /**
- * Created by Himanshu on 8/4/2015.
+ * QuantumFlux sync helper for sync adapter
  */
 public class QuantumFluxSyncHelper {
+    @SafeVarargs
     public static <T> void insert(ContentProviderClient provider, T... dataModelObjects) throws RemoteException {
 
         if (dataModelObjects.length == 1) {
@@ -26,13 +27,8 @@ public class QuantumFluxSyncHelper {
 
             provider.insert(insertUri, contentValues);
         } else {
-            ContentValues[] insertObjects = new ContentValues[dataModelObjects.length];
             TableDetails tableDetails = QuantumFlux.findTableDetails(dataModelObjects[0].getClass());
-
-            for (int i = 0; i < dataModelObjects.length; i++) {
-                T modelObject = dataModelObjects[i];
-                insertObjects[i] = ModelInflater.deflate(tableDetails, modelObject);
-            }
+            ContentValues[] insertObjects = ModelInflater.deflateAll(tableDetails, dataModelObjects);
 
             if (tableDetails != null) {
                 Uri insertUri = UriMatcherHelper.generateItemUriBuilder(tableDetails)
@@ -71,7 +67,6 @@ public class QuantumFluxSyncHelper {
                 .appendQueryParameter(QuantumFluxContentProvider.PARAMETER_SYNC, "false").build();
 
         for (String contentColumn : tableDetails.getColumnNames()) {
-
             boolean includeColumn = false;
             for (String column : columns) {
                 if (contentColumn.equals(column)) {
@@ -80,8 +75,7 @@ public class QuantumFluxSyncHelper {
                 }
             }
 
-            if (!includeColumn)
-                contentValues.remove(contentColumn);
+            if (!includeColumn) contentValues.remove(contentColumn);
         }
 
         provider.update(itemUri, contentValues, null, null);
@@ -95,7 +89,6 @@ public class QuantumFluxSyncHelper {
                 .appendQueryParameter(QuantumFluxContentProvider.PARAMETER_SYNC, "false").build();
 
         for (String columnToExclude : columnsToExclude) {
-
             contentValues.remove(columnToExclude);
         }
 
