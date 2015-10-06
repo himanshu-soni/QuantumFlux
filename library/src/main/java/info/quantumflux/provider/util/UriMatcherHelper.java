@@ -18,7 +18,7 @@ import info.quantumflux.model.generate.ReflectionHelper;
 /**
  * The uri matcher helper that will register all of the valid model url's that can be accessed.
  * Every item will have two URLs exposed, one to access all items, and another to access a single item.
- * <p/>
+ * <br >
  * Each item is separated by a interval (Default 100) for the match code on the UriMatcher.  With the 'all' and 'single' urls containing their own index
  * withing the 100 index gap between model items.
  */
