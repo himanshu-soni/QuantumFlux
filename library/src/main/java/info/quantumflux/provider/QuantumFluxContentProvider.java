@@ -5,18 +5,19 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import java.util.Arrays;
+import java.util.List;
+
 import info.quantumflux.QuantumFlux;
-import info.quantumflux.logger.QuantumFluxLog;
 import info.quantumflux.QuantumFluxDatabase;
+import info.quantumflux.logger.QuantumFluxLog;
 import info.quantumflux.model.generate.TableDetails;
 import info.quantumflux.model.util.ManifestHelper;
 import info.quantumflux.model.util.QuantumFluxException;
 import info.quantumflux.provider.util.UriMatcherHelper;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * The base content provided that will expose all of the model objects.
@@ -43,7 +44,7 @@ public class QuantumFluxContentProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         TableDetails tableDetails = mUriMatcherHelper.getTableDetails(uri);
         SQLiteDatabase db = mDatabase.getReadableDatabase();
         String limit = constructLimit(uri);
@@ -73,12 +74,12 @@ public class QuantumFluxContentProvider extends ContentProvider {
     }
 
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
         return mUriMatcherHelper.getType(uri);
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues contentValues) {
+    public Uri insert(@NonNull Uri uri, ContentValues contentValues) {
         TableDetails tableDetails = mUriMatcherHelper.getTableDetails(uri);
         SQLiteDatabase db = mDatabase.getWritableDatabase();
 
@@ -106,7 +107,7 @@ public class QuantumFluxContentProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String where, String[] args) {
+    public int delete(@NonNull Uri uri, String where, String[] args) {
         TableDetails tableDetails = mUriMatcherHelper.getTableDetails(uri);
         SQLiteDatabase db = mDatabase.getWritableDatabase();
 
@@ -137,7 +138,7 @@ public class QuantumFluxContentProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues contentValues, String where, String[] args) {
+    public int update(@NonNull Uri uri, ContentValues contentValues, String where, String[] args) {
         TableDetails tableDetails = mUriMatcherHelper.getTableDetails(uri);
         SQLiteDatabase db = mDatabase.getWritableDatabase();
 
@@ -167,10 +168,11 @@ public class QuantumFluxContentProvider extends ContentProvider {
     }
 
     @Override
-    public int bulkInsert(Uri uri, ContentValues[] values) {
+    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
+        if (values.length == 0) return 0;
+
         TableDetails tableDetails = mUriMatcherHelper.getTableDetails(uri);
         SQLiteDatabase db = mDatabase.getWritableDatabase();
-        db.beginTransactionNonExclusive();
 
         if (mDebugEnabled) {
             QuantumFluxLog.d("********* Bulk Insert **********");
@@ -180,9 +182,12 @@ public class QuantumFluxContentProvider extends ContentProvider {
         int count = 0;
 
         try {
-            for (int i = 0; i < values.length; i++) {
-                ContentValues contentValues = values[i];
-                db.insertOrThrow(tableDetails.getTableName(), null, contentValues);
+            db.beginTransactionNonExclusive();
+            String tableName = tableDetails.getTableName();
+
+            for (ContentValues value : values) {
+                db.insertOrThrow(tableName, null, value);
+
                 count++;
             }
             db.setTransactionSuccessful();

@@ -1,14 +1,21 @@
 package info.quantumflux.model.generate;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.text.TextUtils;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import info.quantumflux.model.annotation.Index;
 import info.quantumflux.model.annotation.TableConstraint;
 import info.quantumflux.model.map.SqlColumnMapping;
 import info.quantumflux.model.util.QuantumFluxException;
-
-import java.lang.reflect.Field;
-import java.util.*;
 
 /**
  * This class will contain all of the information retrieved from the reflection of a java object.
@@ -20,15 +27,22 @@ public class TableDetails {
     private final String mTableName;
     private final String mAuthority;
     private final Class mTableClass;
-    private final List<ColumnDetails> mColumns = new LinkedList<ColumnDetails>();
-    private final List<Index> mIndices = new LinkedList<Index>();
-    private final List<TableConstraint> mConstraints = new LinkedList<TableConstraint>();
-    private final List<Class<?>> mChangeListener = new LinkedList<Class<?>>();
+    private final Constructor mTableClassConstructor;
+    private final List<ColumnDetails> mColumns = new LinkedList<>();
+    private final List<Index> mIndices = new LinkedList<>();
+    private final List<TableConstraint> mConstraints = new LinkedList<>();
+    private final List<Class<?>> mChangeListener = new LinkedList<>();
 
     public TableDetails(String tableName, String authority, Class tableClass) {
         this.mTableName = tableName;
         this.mAuthority = authority;
         this.mTableClass = tableClass;
+        try {
+            mTableClassConstructor = tableClass.getConstructor();
+            mTableClassConstructor.setAccessible(true);
+        } catch (Exception ex) {
+            throw new QuantumFluxException("Could not create a new instance of data model object: " + tableName);
+        }
     }
 
     public String getTableName() {
@@ -41,6 +55,10 @@ public class TableDetails {
 
     public Class getTableClass() {
         return mTableClass;
+    }
+
+    public Object createNewModelInstance() throws IllegalAccessException, InvocationTargetException, InstantiationException {
+        return mTableClassConstructor.newInstance();
     }
 
     public ColumnDetails findPrimaryKeyColumn() {
@@ -178,6 +196,19 @@ public class TableDetails {
 
         public boolean notifyChanges() {
             return mNotifyChanges;
+        }
+
+
+        public void setFieldValue(Cursor cursor, int columnIndex, Object dataModelObject) throws IllegalAccessException {
+            mColumnField.set(dataModelObject, mColumnMapping.getColumnValue(cursor, columnIndex));
+        }
+
+        public void setContentValue(ContentValues contentValues, Object dataModelObject) throws IllegalAccessException {
+
+            Object value = mColumnField.get(dataModelObject);
+
+            if (value == null) contentValues.putNull(mColumnName);
+            else mColumnMapping.setColumnValue(contentValues, mColumnName, value);
         }
 
 //        public Class<?> getReference() {

@@ -5,8 +5,8 @@ import android.support.v4.content.CursorLoader;
 
 import info.quantumflux.model.generate.TableDetails;
 import info.quantumflux.model.query.Select;
-import info.quantumflux.model.util.QuantumFluxCursor;
 import info.quantumflux.model.util.ContentResolverValues;
+import info.quantumflux.model.util.QuantumFluxCursor;
 
 public class QuantumFluxLoader<T> extends CursorLoader {
 
@@ -53,13 +53,19 @@ public class QuantumFluxLoader<T> extends CursorLoader {
     }
 
     @Override
-    public QuantumFluxCursor loadInBackground() {
+    public QuantumFluxCursor<T> loadInBackground() {
         QuantumFluxCursor<T> cursor = new QuantumFluxCursor<>(mTableDetails, super.loadInBackground());
 
         if (mCacheSize == 0) {
             cursor.enableCache();
         } else if (mCacheSize > 0) {
             cursor.enableCache(mCacheSize);
+        }
+
+        //Prefetch at least some items in preparation for the list
+        for (int i = 0; i < cursor.getCount() && cursor.isCacheEnabled() && i < 100; i++) {
+            cursor.moveToPosition(i);
+            T inflate = cursor.inflate();
         }
 
         return cursor;

@@ -3,11 +3,9 @@ package info.quantumflux.model.util;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 import info.quantumflux.model.generate.TableDetails;
-import info.quantumflux.model.map.SqlColumnMapping;
 
 /**
  * Handles the inflation and deflation of Java objects to and from content values/cursors
@@ -35,11 +33,7 @@ public class ModelInflater {
             if (columnDetails.isAutoIncrement()) continue;
 
             try {
-                String key = columnDetails.getColumnName();
-                Object value = columnDetails.getColumnField().get(dataModelObject);
-
-                if (value == null) contentValues.putNull(key);
-                else columnDetails.getColumnTypeMapping().setColumnValue(contentValues, key, value);
+                columnDetails.setContentValue(contentValues, dataModelObject);
             } catch (IllegalAccessException e) {
                 throw new QuantumFluxException("Unable to access protected field, change the access level: " + columnDetails.getColumnName());
             }
@@ -61,18 +55,9 @@ public class ModelInflater {
 
             if (columnDetails.isAutoIncrement()) continue;
 
-            String key = columnDetails.getColumnName();
-            Field columnField = columnDetails.getColumnField();
-            SqlColumnMapping columnMapping = columnDetails.getColumnTypeMapping();
-
             for (int j = 0; j < dataModelObjects.length; j++) {
                 try {
-                    Object dataModelObject = dataModelObjects[j];
-                    Object value = columnField.get(dataModelObject);
-                    ContentValues contentValues = contentValuesArray[j];
-
-                    if (value == null) contentValues.putNull(key);
-                    else columnMapping.setColumnValue(contentValues, key, value);
+                    columnDetails.setContentValue(contentValuesArray[j], dataModelObjects[j]);
                 } catch (IllegalAccessException e) {
                     throw new QuantumFluxException("Unable to access protected field, change the access level: " + columnDetails.getColumnName());
                 }
@@ -85,7 +70,7 @@ public class ModelInflater {
         T dataModelObject;
 
         try {
-            dataModelObject = (T) tableDetails.getTableClass().getConstructor().newInstance();
+            dataModelObject = (T) tableDetails.createNewModelInstance();
         } catch (Exception ex) {
             throw new QuantumFluxException("Could not create a new instance of data model object: " + tableDetails.getTableName());
         }
@@ -107,9 +92,8 @@ public class ModelInflater {
             return;
         }
 
-        Field columnField = columnDetails.getColumnField();
         try {
-            columnField.set(dataModelObject, columnDetails.getColumnTypeMapping().getColumnValue(cursor, columnIndex));
+            columnDetails.setFieldValue(cursor, columnIndex, dataModelObject);
         } catch (IllegalAccessException e) {
             throw new QuantumFluxException("Not allowed to alter the value of the field, please change the access level: " + columnDetails.getColumnName());
         }

@@ -4,9 +4,9 @@ import android.database.Cursor;
 import android.database.CursorWrapper;
 import android.util.LruCache;
 
-import info.quantumflux.model.generate.TableDetails;
-
 import java.lang.ref.SoftReference;
+
+import info.quantumflux.model.generate.TableDetails;
 
 /**
  * This class is a wrapper for cursor returned by the ORM, it has some helper methods like inflating to an object from the cursor
@@ -85,6 +85,10 @@ public class QuantumFluxCursor<T> extends CursorWrapper {
         return cachedObject;
     }
 
+    public boolean isCacheEnabled() {
+        return mObjectCache != null;
+    }
+
     /**
      * Inflates the object at the current cursor position, and inserts it into the cache with the position as ID
      *
@@ -92,7 +96,7 @@ public class QuantumFluxCursor<T> extends CursorWrapper {
      */
     private T insertCacheObject() {
         T cachedObject = ModelInflater.inflate(this, mTableDetails);
-        mObjectCache.put(getPosition(), new SoftReference<T>(cachedObject));
+        mObjectCache.put(getPosition(), new SoftReference<>(cachedObject));
 
         return cachedObject;
     }

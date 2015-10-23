@@ -4,17 +4,22 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 import info.quantumflux.QuantumFlux;
 import info.quantumflux.model.generate.TableDetails;
 import info.quantumflux.model.map.SqlColumnMappingFactory;
-import info.quantumflux.model.util.QuantumFluxCursor;
 import info.quantumflux.model.util.ContentResolverValues;
 import info.quantumflux.model.util.CursorIterator;
+import info.quantumflux.model.util.QuantumFluxCursor;
 import info.quantumflux.model.util.QuantumFluxException;
 import info.quantumflux.provider.QuantumFluxContentProvider;
 import info.quantumflux.provider.util.UriMatcherHelper;
-
-import java.util.*;
 
 /**
  * The starting point for select statements.  Contains the basic functions to do a simple select operation
@@ -32,10 +37,10 @@ public class Select<T> implements DataFilterClause<Select<T>> {
 
     private Select(Class<T> dataObjectClass) {
         this.mDataObjectClass = dataObjectClass;
-        this.mSortingOrderList = new LinkedList<String>();
+        this.mSortingOrderList = new LinkedList<>();
         this.mFilterCriteria = new DataFilterCriteria();
-        this.mIncludedColumns = new ArrayList<String>();
-        this.mExcludedColumns = new ArrayList<String>();
+        this.mIncludedColumns = new ArrayList<>();
+        this.mExcludedColumns = new ArrayList<>();
     }
 
     /**
@@ -46,7 +51,7 @@ public class Select<T> implements DataFilterClause<Select<T>> {
      * @return The current Select instance
      */
     public static <T> Select<T> from(Class<T> dataObjectClass) {
-        return new Select<T>(dataObjectClass);
+        return new Select<>(dataObjectClass);
     }
 
     /**
@@ -102,7 +107,7 @@ public class Select<T> implements DataFilterClause<Select<T>> {
      * @return The current select instance
      */
     public DataFilterCriterion.Builder<Select<T>> and() {
-        return new DataFilterCriterion.Builder<Select<T>>(this, DataFilterClause.DataFilterConjunction.AND);
+        return new DataFilterCriterion.Builder<>(this, DataFilterClause.DataFilterConjunction.AND);
     }
 
     /**
@@ -122,7 +127,7 @@ public class Select<T> implements DataFilterClause<Select<T>> {
      * @return The current select instance
      */
     public DataFilterCriterion.Builder<Select<T>> or() {
-        return new DataFilterCriterion.Builder<Select<T>>(this, DataFilterClause.DataFilterConjunction.OR);
+        return new DataFilterCriterion.Builder<>(this, DataFilterClause.DataFilterConjunction.OR);
     }
 
     /**
@@ -142,7 +147,7 @@ public class Select<T> implements DataFilterClause<Select<T>> {
      * @return The current select instance
      */
     public DataFilterCriteria.Builder<Select<T>> openBracketAnd() {
-        return new DataFilterCriteria.Builder<Select<T>>(this, DataFilterClause.DataFilterConjunction.AND);
+        return new DataFilterCriteria.Builder<>(this, DataFilterClause.DataFilterConjunction.AND);
     }
 
     /**
@@ -151,7 +156,7 @@ public class Select<T> implements DataFilterClause<Select<T>> {
      * @return The current select instance
      */
     public DataFilterCriteria.Builder<Select<T>> openBracketOr() {
-        return new DataFilterCriteria.Builder<Select<T>>(this, DataFilterClause.DataFilterConjunction.OR);
+        return new DataFilterCriteria.Builder<>(this, DataFilterClause.DataFilterConjunction.OR);
     }
 
     /**
@@ -248,7 +253,7 @@ public class Select<T> implements DataFilterClause<Select<T>> {
                 contentResolverValues.getWhereArgs(),
                 contentResolverValues.getSortOrder());
 
-        return new QuantumFluxCursor<T>(contentResolverValues.getTableDetails(), cursor);
+        return new QuantumFluxCursor<>(contentResolverValues.getTableDetails(), cursor);
     }
 
     /**
@@ -260,7 +265,7 @@ public class Select<T> implements DataFilterClause<Select<T>> {
      */
     public CursorIterator<T> queryAsIterator() {
         QuantumFluxCursor<T> cursor = queryAsCursor();
-        return new CursorIterator<T>(cursor.getTableDetails(), cursor);
+        return new CursorIterator<>(cursor.getTableDetails(), cursor);
     }
 
 
@@ -270,17 +275,17 @@ public class Select<T> implements DataFilterClause<Select<T>> {
      * @return The list containing the results
      */
     public List<T> queryAsList() {
-        List<T> resultList = new ArrayList<T>();
         QuantumFluxCursor<T> cursor = queryAsCursor();
 
         try {
+            List<T> resultList = new ArrayList<>(cursor.getCount());
             while (cursor.moveToNext()) {
                 resultList.add(cursor.inflate());
             }
+            return resultList;
         } finally {
             cursor.close();
         }
-        return resultList;
     }
 
 
@@ -292,8 +297,8 @@ public class Select<T> implements DataFilterClause<Select<T>> {
     public int queryAsCount() {
         QuantumFluxCursor<T> cursor = queryAsCursor();
 
-        List<String> includedColumnsTemp = new ArrayList<String>();
-        List<String> excludedColumnsTemp = new ArrayList<String>();
+        List<String> includedColumnsTemp = new ArrayList<>();
+        List<String> excludedColumnsTemp = new ArrayList<>();
         Collections.copy(includedColumnsTemp, mIncludedColumns);
         Collections.copy(excludedColumnsTemp, mExcludedColumns);
 
