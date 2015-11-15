@@ -147,6 +147,9 @@ See [releases](https://github.com/himanshu-soni/QuantumFlux/releases) page to do
 For detailed configuration and advance usages, go through
 [https://github.com/himanshu-soni/QuantumFlux/wiki](https://github.com/himanshu-soni/QuantumFlux/wiki)
 
+Inspired from https://github.com/wackymax/CPOrm and https://github.com/satyan/sugar 
+
+Special thanks to Satya Narayan (@satyan) and Hennie Brink (@Wackymax).
 
 developed to make programming easy.
 
