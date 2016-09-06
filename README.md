@@ -4,7 +4,7 @@ It can be used as a typical ORM, by creating Java objects and applying some Anno
 they will be accessed normally and creates [ContentProvider](http://developer.android.com/reference/android/content/ContentProvider.html). 
 
 
-[ ![Download](https://api.bintray.com/packages/himanshu-soni/maven/QuantumFlux/images/download.svg) ](https://bintray.com/himanshu-soni/maven/QuantumFlux/_latestVersion)
+[![Download](https://api.bintray.com/packages/himanshu-soni/maven/quantum-flux/images/download.svg) ](https://bintray.com/himanshu-soni/maven/quantum-flux/_latestVersion)
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-QuantumFlux-green.svg?style=flat)](https://android-arsenal.com/details/1/2347)
 
 
@@ -26,7 +26,7 @@ For more information in detail, please check [Wiki](https://github.com/himanshu-
 add following line to your module's dependency list:
 
 ```
-compile 'info.quantumflux:library:0.9.1'
+compile 'me.himanshusoni:quantum-flux:0.9.2'
 ```
 
 
@@ -36,9 +36,10 @@ Declare the dependency in Maven:
 
 ```
 <dependency>
-    <groupId>info.quantumflux</groupId>
-    <artifactId>library</artifactId>
-    <version>0.9.1</version>
+  <groupId>me.himanshusoni</groupId>
+  <artifactId>quantum-flux</artifactId>
+  <version>0.9.2</version>
+  <type>pom</type>
 </dependency>
 ```
 
@@ -70,7 +71,7 @@ See [releases](https://github.com/himanshu-soni/QuantumFlux/releases) page to do
    
    ```xml
    <application
-           android:name="info.quantumflux.sample.SampleApplication"
+           android:name="me.himanshusoni.quantumflux.sample.SampleApplication"
            ...
            >
    ```
@@ -79,10 +80,10 @@ See [releases](https://github.com/himanshu-soni/QuantumFlux/releases) page to do
 3. add following meta data in `<application>` tag
    
    ```xml
-   <meta-data android:name="AUTHORITY" android:value="info.quantumflux.sample" />
+   <meta-data android:name="AUTHORITY" android:value="me.himanshusoni.quantumflux.sample" />
    <meta-data android:name="DATABASE_NAME" android:value="QuantumFluxSample.sqlite" />
    <meta-data android:name="DATABASE_VERSION" android:value="1" />
-   <meta-data android:name="PACKAGE_NAME" android:value="info.quantumflux.sample" />
+   <meta-data android:name="PACKAGE_NAME" android:value="me.himanshusoni.quantumflux.sample" />
    <meta-data android:name="QUERY_LOG" android:value="true" /> <!-- Optional -->
    ```
    
@@ -91,8 +92,8 @@ See [releases](https://github.com/himanshu-soni/QuantumFlux/releases) page to do
     
     ```xml
     <provider
-        android:name="info.quantumflux.provider.QuantumFluxContentProvider"
-        android:authorities="info.quantumflux.sample"
+        android:name="me.himanshusoni.quantumflux.provider.QuantumFluxContentProvider"
+        android:authorities="me.himanshusoni.quantumflux.sample"
         android:exported="false" />
     ```
     
