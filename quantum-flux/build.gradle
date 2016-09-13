@@ -9,7 +9,7 @@ android {
         minSdkVersion 12
         targetSdkVersion 24
         versionCode 3
-        versionName "0.9.2"
+        versionName "0.9.3"
     }
     buildTypes {
     }
@@ -20,7 +20,7 @@ ext {
     bintrayName = 'quantum-flux'
 
     publishedGroupId = 'me.himanshusoni'
-    libraryName = 'library'
+    libraryName = 'quantum-flux'
     artifact = 'quantum-flux'
 
     libraryDescription = 'A Powerful Android Content Provider ORM'
@@ -28,7 +28,7 @@ ext {
     siteUrl = 'https://github.com/himanshu-soni/QuantumFlux'
     gitUrl = 'https://github.com/himanshu-soni/QuantumFlux.git'
 
-    libraryVersion = '0.9.2'
+    libraryVersion = '0.9.3'
 
     developerId = 'himanshu-soni'
     developerName = 'Himanshu Soni'
